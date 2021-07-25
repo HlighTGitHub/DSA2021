@@ -1,0 +1,136 @@
+/*Cre: HlighT*/
+#include <bits/stdc++.h>
+#define IOS(false) ios::sync_with_stdio(false)
+#define tie() cin.tie(NULL)
+/*Compact*/
+#define fi first
+#define se second
+#define pb push_back
+#define pob pop_back
+#define mp make_pair
+#define sz(Object) Object.size()
+#define all(Object) Object.begin(), Object.end()
+#define Re0(Object) memset(Object, 0, sizeof(Object))
+#define Fu(tmp,L,R,Jump)	for(int tmp=L; tmp<R; tmp+=Jump)
+#define Fd(tmp,R,L,Jump)	for(int tmp=R; tmp>=L; tmp-=Jump)
+#define cinArr(Array, N)	for(int i=0; i<N; ++i)  cin >> Array[i];
+#define coutArr(Array, N)	for(int i=0; i<N; ++i)	cout << Array[i] << ' ';
+/*Constant*/
+#define Pi atan(1)*4
+#define oo INT_MAX
+const int ArrLim = 1e6+5;
+const int Mod = 1e9+7;
+/*Declare*/
+using namespace std;
+typedef long long ll;
+typedef double db;
+typedef pair <int, int> pii;
+
+/*Initialize*/
+bool MultiTest = true;
+int test = 1;
+int V, E, M;
+vector <int> edge[15];
+/*Function*/
+void init();
+bool cmp(int a, int b);
+int Greedy_Coloring(int order[]);
+int BFS_Coloring();
+void solve();
+/*Main program*/
+int main(){
+    IOS(false);
+    tie();
+    if(MultiTest)	cin >> test;
+    while(test--){
+        init();
+        solve();
+        cout << endl;
+    }
+    return 0;
+}
+
+
+void init(){
+    cin >> V >> E >> M;
+    Fu(i, 0, 11, 1) edge[i].clear();
+    int x, y;
+    Fu(i, 0, E, 1){
+        cin >> x >> y;
+        edge[x].pb(y);
+        edge[y].pb(x);
+    }
+}
+
+
+bool cmp(int a, int b){
+    return sz(edge[a]) > sz(edge[b]);
+}
+
+
+int Greedy_Coloring(int order[]){
+    int color[V+1] = {0};
+    color[order[0]] = 1;
+    int Max = 1;
+    Fu(i, 1, V, 1){
+        int vertice = order[i];
+        int expect = 1;
+        bool same = true;
+        while(same){
+            same = false;
+            Fu(j, 0, sz(edge[vertice]), 1)
+                if(expect == color[edge[vertice][j]]){
+                    ++expect;
+                    same = true;
+                }
+        }
+        color[vertice] = expect;
+        Max = max(Max, expect);
+    }
+    // return *max(color+1, color+V);
+    return Max;
+}
+
+
+int BFS_Coloring(){
+    int color[V+1] = {0};
+    bool seen[V+1] = {0};
+    Fu(i, 1, V+1, 1) color[i]=1;
+    Fu(i, 1, V+1, 1) sort(all(edge[i]));
+    Fu(start, 1, V+1, 1){
+        if(seen[start]) continue;
+        queue <int> q;
+        q.push(start);
+        seen[start] = true;
+        while(!q.empty()){
+            int v = q.front();
+            q.pop();
+            Fu(i, 0, sz(edge[v]), 1){
+                int w = edge[v][i];
+                if(color[w] == color[v])
+                    ++color[w];
+                if(!seen[w]){
+                    seen[w] = true;
+                    q.push(w);
+                }
+            }
+        }
+    }
+    return *max_element(color+1, color+V+1);
+}
+
+void solve(){
+    string res = "NO";
+    if(2*E == V*(V-1)){ 
+        if(M >= V)  
+            res = "YES";
+    }
+    else{
+        // int order[V];
+        // iota(order, order+V, 1);
+        // sort(order, order+V, cmp);
+        if(BFS_Coloring() <= M)
+            res = "YES";
+    }
+    cout << res;
+}
