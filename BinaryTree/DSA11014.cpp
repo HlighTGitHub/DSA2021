@@ -106,7 +106,7 @@ void solve(){
             if(root == NULL)
                 root = m[x];
         }
-        makeNodeTest(m[x], y, side, &m);
+        makeNode(m[x], y, side, &m);
     }
     cout << BFS(root);
     /*Another way:
